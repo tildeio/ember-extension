@@ -21,6 +21,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      # Code Climate expects these variables to be set
+      - name: Set up commit metadata
+        if: github.event_name == 'push'
+        env:
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          GIT_BRANCH: ${{ github.ref }}
+        run: |
+          echo "::set-env name=GIT_COMMIT_SHA::${GIT_COMMIT_SHA}"
+          echo "::set-env name=GIT_BRANCH::${GIT_BRANCH/refs\/heads\//}"
+      - name: Set up commit metadata
+        if: github.event_name == 'pull_request'
+        env:
+          GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          GIT_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "::set-env name=GIT_COMMIT_SHA::${GIT_COMMIT_SHA}"
+          echo "::set-env name=GIT_BRANCH::${GIT_BRANCH}"
       - name: Set up Volta
         uses: rwjblue/setup-volta@v1
       - name: Install dependencies (yarn)
@@ -51,6 +68,7 @@ jobs:
       #     EMBER_ENV: test
       #     COVERAGE: 'true'
       - name: Report coverage
+        if: github.event_name != 'schedule'
         run: yarn codeclimate-test-reporter < coverage/lcov.info
         env:
           CODECLIMATE_REPO_TOKEN: 59edcfd1ffc778791af49ca594b503e7179f6bbe1991b2cc0c0a6987d103253d
@@ -64,6 +82,7 @@ jobs:
     strategy:
       matrix:
         scenario:
+          - default-no-prototype-extensions
           - release
           - beta
           - canary
@@ -77,6 +96,9 @@ jobs:
         uses: rwjblue/setup-volta@v1
       - name: Install dependencies (yarn)
         run: yarn install
+      - name: Set NO_EXTEND_PROTOTYPES
+        if: matrix.scenario == 'default-no-prototype-extensions'
+        run: echo "::set-env name=NO_EXTEND_PROTOTYPES,::true"
       - name: Setup ember-try scenario
         run: yarn ember try:one ember-${{ matrix.scenario }} --skip-cleanup --- cat package.json
       - name: Build
@@ -88,7 +110,6 @@ jobs:
 
   build:
     name: Build extensions
-    needs: test
     runs-on: ubuntu-latest
     env:
       CI: 'true'
@@ -103,10 +124,10 @@ jobs:
         run: node scripts/download-panes.js
         env:
           EMBER_ENV: production
-      - name: Update manifest.json
+      - name: Update manifest.json (nightly)
         if: github.event_name == 'schedule'
         run: |
-          DATE="$(date +"%Y.%m.%d")"
+          DATE="$(date +"%Y.%-m.%-d")"
           SHA="${GITHUB_SHA:0:7}"
           VERSION="$(jq -r '.version' package.json)"
           CONTENT="$(cat "$FILE")"
@@ -119,10 +140,26 @@ jobs:
             .name += " (Nightly)" |
             .version = $date |
             .version_name = "\($version) (nightly build \($date) / \($sha))"
-      - name: Update package.json
+      - name: Update manifest.json (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          SHA="${SHA:0:7}"
+          CONTENT="$(cat "$FILE")"
+
+          echo "$CONTENT" | jq --arg pr "$PR" --arg sha "$SHA" "$FILTER" > $FILE
+          cat "$FILE"
+        env:
+          FILE: skeletons/web-extension/manifest.json
+          FILTER: >-
+            .name += " (PR #\($pr))" |
+            .version = $pr |
+            .version_name = $sha
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+      - name: Update package.json (nightly)
         if: github.event_name == 'schedule'
         run: |
-          DATE="$(date +"%Y.%m.%d")"
+          DATE="$(date +"%Y.%-m.%-d")"
           SHA="${GITHUB_SHA:0:7}"
           CONTENT="$(cat "$FILE")"
 
@@ -131,6 +168,27 @@ jobs:
         env:
           FILE: package.json
           FILTER: .version += "-alpha.\($date)+\($sha)"
+      - name: Update package.json (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          SHA="${SHA:0:7}"
+          CONTENT="$(cat "$FILE")"
+
+          echo "$CONTENT" | jq --arg pr "$PR" --arg sha "$SHA" "$FILTER" > $FILE
+          cat "$FILE"
+        env:
+          FILE: package.json
+          FILTER: .version += "-alpha.0.\($pr)+\($sha)"
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+      - name: Set EMBER_INSPECTOR_TAB (nightly)
+        if: github.event_name == 'schedule'
+        run: echo "::set-env name=EMBER_INSPECTOR_TAB,::Nightly"
+      - name: Set EMBER_INSPECTOR_TAB (pull request)
+        if: github.event_name == 'pull_request'
+        run: echo "::set-env name=EMBER_INSPECTOR_TAB,::PR \#$PR"
+        env:
+          PR: ${{ github.event.pull_request.number }}
       - name: Build
         run: yarn ember build --environment production
       - name: Pack
@@ -171,7 +229,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts (bookmarklet)
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v1
         with:
           name: bookmarklet
       - name: Upload to S3
@@ -201,7 +259,7 @@ jobs:
       - name: Install dependencies (chrome-webstore-upload-cli)
         run: volta install chrome-webstore-upload-cli
       - name: Download artifacts (Chrome)
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v1
         with:
           name: chrome
       - name: Upload to Chrome Web Store
@@ -233,7 +291,7 @@ jobs:
           # https://github.com/mozilla/web-ext/issues/804
           volta install web-ext-submit
       - name: Download artifacts (Firefox)
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v1
         with:
           name: firefox
       - name: Upload to AMO
@@ -264,7 +322,7 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Download artifacts (npm)
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v1
         with:
           name: npm
       - name: Publish to npm

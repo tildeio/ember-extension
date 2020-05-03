@@ -1,5 +1,88 @@
 # Changelog
 
+## [v3.13.2](https://github.com/emberjs/ember-inspector/tree/v3.13.2) (2020-02-19)
+
+[Full Changelog](https://github.com/emberjs/ember-inspector/compare/v3.13.1...v3.13.2)
+
+**Fixed bugs:**
+
+- fix recursion of getTagTrackedProps [\#1144](https://github.com/emberjs/ember-inspector/pull/1144) ([patricklx](https://github.com/patricklx))
+- Fix fallback to old inspectors [\#1141](https://github.com/emberjs/ember-inspector/pull/1141) ([wycats](https://github.com/wycats))
+- \[BUGFIX\] Updates "import" paths for autotracking APIs [\#1138](https://github.com/emberjs/ember-inspector/pull/1138) ([pzuraq](https://github.com/pzuraq))
+- only boot inspector on HTML pages [\#1137](https://github.com/emberjs/ember-inspector/pull/1137) ([efx](https://github.com/efx))
+
+**Closed issues:**
+
+- Route Tab not displaying anything - 3.15 [\#1140](https://github.com/emberjs/ember-inspector/issues/1140)
+- injected script breaks browser default XML presentation [\#1136](https://github.com/emberjs/ember-inspector/issues/1136)
+- Investigate canary failures [\#1134](https://github.com/emberjs/ember-inspector/issues/1134)
+- Error message: Ember.meta\(...\).peekDescriptors is not a function - Object are not shown for any ember component [\#1120](https://github.com/emberjs/ember-inspector/issues/1120)
+
+**Merged pull requests:**
+
+- Bump Ember Table to 2.2.2 [\#1131](https://github.com/emberjs/ember-inspector/pull/1131) ([mixonic](https://github.com/mixonic))
+- Fix canary test failure [\#1130](https://github.com/emberjs/ember-inspector/pull/1130) ([chancancode](https://github.com/chancancode))
+- Bump handlebars from 4.2.1 to 4.5.3 [\#1122](https://github.com/emberjs/ember-inspector/pull/1122) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v3.13.1](https://github.com/emberjs/ember-inspector/tree/v3.13.1) (2019-12-20)
+
+[Full Changelog](https://github.com/emberjs/ember-inspector/compare/v3.13.0...v3.13.1)
+
+**Fixed bugs:**
+
+- Inspector does not recognize app if Ember.ENV.EXTEND\_PROTOTYPES does not exist [\#1114](https://github.com/emberjs/ember-inspector/issues/1114)
+- Fix prototype extensions detection [\#1117](https://github.com/emberjs/ember-inspector/pull/1117) ([chancancode](https://github.com/chancancode))
+- Bring back Node 8 support \(for now\) [\#1116](https://github.com/emberjs/ember-inspector/pull/1116) ([chancancode](https://github.com/chancancode))
+- Render the CHANGELOG for the current version [\#1115](https://github.com/emberjs/ember-inspector/pull/1115) ([chancancode](https://github.com/chancancode))
+
+**Merged pull requests:**
+
+- v3.13.0 CHANGELOGs [\#1113](https://github.com/emberjs/ember-inspector/pull/1113) ([chancancode](https://github.com/chancancode))
+
+## [v3.13.0](https://github.com/emberjs/ember-inspector/tree/v3.13.0) (2019-12-19)
+
+[Full Changelog](https://github.com/emberjs/ember-inspector/compare/v3.12.5...v3.13.0)
+
+**Implemented enhancements:**
+
+- Don't abuse timers [\#1108](https://github.com/emberjs/ember-inspector/pull/1108) ([chancancode](https://github.com/chancancode))
+- Only deepClone when without prototype extensions [\#1107](https://github.com/emberjs/ember-inspector/pull/1107) ([chancancode](https://github.com/chancancode))
+- Revamp components inspection \(Octane support and improved UX\) [\#1088](https://github.com/emberjs/ember-inspector/pull/1088) ([chancancode](https://github.com/chancancode))
+- Fix tracked detection [\#1087](https://github.com/emberjs/ember-inspector/pull/1087) ([patricklx](https://github.com/patricklx))
+- Name Known Ember Mixins [\#1055](https://github.com/emberjs/ember-inspector/pull/1055) ([patricklx](https://github.com/patricklx))
+- Improve proxies [\#1053](https://github.com/emberjs/ember-inspector/pull/1053) ([patricklx](https://github.com/patricklx))
+- Fix Ember.typeof replace with custom typeof [\#1052](https://github.com/emberjs/ember-inspector/pull/1052) ([patricklx](https://github.com/patricklx))
+
+**Fixed bugs:**
+
+- inspector breaks for Glimmer Components containing {{link-to}} [\#961](https://github.com/emberjs/ember-inspector/issues/961)
+- Fix inspecting Glimmer components w/ obj inspector [\#1106](https://github.com/emberjs/ember-inspector/pull/1106) ([chancancode](https://github.com/chancancode))
+- Avoid errors when using older Ember versions. [\#1102](https://github.com/emberjs/ember-inspector/pull/1102) ([chancancode](https://github.com/chancancode))
+- fix issue with ember tracking reentry assert [\#1094](https://github.com/emberjs/ember-inspector/pull/1094) ([patricklx](https://github.com/patricklx))
+- fix accessing properties of Object Proxy [\#1092](https://github.com/emberjs/ember-inspector/pull/1092) ([patricklx](https://github.com/patricklx))
+- Fix template name [\#1085](https://github.com/emberjs/ember-inspector/pull/1085) ([chancancode](https://github.com/chancancode))
+
+**Closed issues:**
+
+- component.get is not a function errors [\#1049](https://github.com/emberjs/ember-inspector/issues/1049)
+- Integrate debug render tree [\#1031](https://github.com/emberjs/ember-inspector/issues/1031)
+- Figure out an API to get the component from the DOM [\#1001](https://github.com/emberjs/ember-inspector/issues/1001)
+- Custom Component Support [\#870](https://github.com/emberjs/ember-inspector/issues/870)
+
+**Merged pull requests:**
+
+- Update `inspectNode` implementation [\#1105](https://github.com/emberjs/ember-inspector/pull/1105) ([chancancode](https://github.com/chancancode))
+- Upload PR artifacts [\#1104](https://github.com/emberjs/ember-inspector/pull/1104) ([chancancode](https://github.com/chancancode))
+- Refactor acceptance tests [\#1103](https://github.com/emberjs/ember-inspector/pull/1103) ([chancancode](https://github.com/chancancode))
+- Fix no-new-mixins [\#1099](https://github.com/emberjs/ember-inspector/pull/1099) ([chancancode](https://github.com/chancancode))
+- Bump dependencies [\#1096](https://github.com/emberjs/ember-inspector/pull/1096) ([chancancode](https://github.com/chancancode))
+- Refactor `StorageService` [\#1095](https://github.com/emberjs/ember-inspector/pull/1095) ([chancancode](https://github.com/chancancode))
+- Do not include leading zeros when calculating version number [\#1091](https://github.com/emberjs/ember-inspector/pull/1091) ([locks](https://github.com/locks))
+- Refactor app `port` into a regular service [\#1090](https://github.com/emberjs/ember-inspector/pull/1090) ([chancancode](https://github.com/chancancode))
+- Fix inspector in Electron [\#1084](https://github.com/emberjs/ember-inspector/pull/1084) ([bendemboski](https://github.com/bendemboski))
+- Sync CHANGELOG [\#1083](https://github.com/emberjs/ember-inspector/pull/1083) ([chancancode](https://github.com/chancancode))
+- Use babel-plugin-module-resolver [\#998](https://github.com/emberjs/ember-inspector/pull/998) ([rwwagner90](https://github.com/rwwagner90))
+
 ## [v3.12.5](https://github.com/emberjs/ember-inspector/tree/v3.12.5) (2019-11-13)
 
 [Full Changelog](https://github.com/emberjs/ember-inspector/compare/v3.12.4...v3.12.5)

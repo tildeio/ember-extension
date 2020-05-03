@@ -8,6 +8,7 @@ module.exports = function(environment) {
     environment,
     rootURL: '',
     locationType: 'hash',
+    version: packageJson.version,
     emberVersionsSupported: packageJson.emberVersionsSupported,
     previousEmberVersionsSupported: packageJson.previousEmberVersionsSupported,
     EmberENV: {
@@ -16,7 +17,7 @@ module.exports = function(environment) {
         // e.g. EMBER_MODULE_UNIFICATION: true
         EMBER_METAL_TRACKED_PROPERTIES: true
       },
-      EXTEND_PROTOTYPES: {
+      EXTEND_PROTOTYPES: process.env.NO_EXTEND_PROTOTYPES ? false : {
         // Prevent Ember Data from overriding Date.parse.
         Date: false
       }
