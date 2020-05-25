@@ -1,3 +1,4 @@
+// eslint-disable-next-line ember/no-mixins
 import PortMixin from 'ember-debug/mixins/port-mixin';
 import PromiseAssembler from 'ember-debug/libs/promise-assembler';
 const Ember = window.Ember;
@@ -14,7 +15,9 @@ export default EmberObject.extend(PortMixin, {
   // created on init
   promiseAssembler: null,
 
-  releaseMethods: computed(function() { return A(); }),
+  releaseMethods: computed(function () {
+    return A();
+  }),
 
   init() {
     this._super();
@@ -61,9 +64,11 @@ export default EmberObject.extend(PortMixin, {
       // Remove first two lines and add label
       let stack = promise.get('stack');
       if (stack) {
-        stack = stack.split("\n");
-        stack.splice(0, 2, [`Ember Inspector (Promise Trace): ${promise.get('label') || ''}`]);
-        this.get("adapter").log(stack.join("\n"));
+        stack = stack.split('\n');
+        stack.splice(0, 2, [
+          `Ember Inspector (Promise Trace): ${promise.get('label') || ''}`,
+        ]);
+        this.get('adapter').log(stack.join('\n'));
       }
     },
 
@@ -75,7 +80,7 @@ export default EmberObject.extend(PortMixin, {
 
     getInstrumentWithStack() {
       this.sendInstrumentWithStack();
-    }
+    },
   },
 
   instrumentWithStack: computed({
@@ -85,12 +90,12 @@ export default EmberObject.extend(PortMixin, {
     set(key, value) {
       this.get('session').setItem('promise:stack', value);
       return value;
-    }
+    },
   }),
 
   sendInstrumentWithStack() {
     this.sendMessage('instrumentWithStack', {
-      instrumentWithStack: this.get('instrumentWithStack')
+      instrumentWithStack: this.get('instrumentWithStack'),
     });
   },
 
@@ -100,7 +105,7 @@ export default EmberObject.extend(PortMixin, {
   },
 
   releaseAll() {
-    this.get('releaseMethods').forEach(fn => {
+    this.get('releaseMethods').forEach((fn) => {
       fn();
     });
     this.set('releaseMethods', A());
@@ -122,20 +127,24 @@ export default EmberObject.extend(PortMixin, {
     this.promisesUpdated(this.get('promiseAssembler').find());
   },
 
-  updatedPromises: computed(function() { return A(); }),
+  updatedPromises: computed(function () {
+    return A();
+  }),
 
   promisesUpdated(uniquePromises) {
     if (!uniquePromises) {
       uniquePromises = A();
-      this.get('updatedPromises').forEach(promise => {
+      this.get('updatedPromises').forEach((promise) => {
         uniquePromises.addObject(promise);
       });
     }
     // Remove inspector-created promises
-    uniquePromises = uniquePromises.filter(promise => promise.get('label') !== 'ember-inspector');
+    uniquePromises = uniquePromises.filter(
+      (promise) => promise.get('label') !== 'ember-inspector'
+    );
     const serialized = this.serializeArray(uniquePromises);
     this.sendMessage('promisesUpdated', {
-      promises: serialized
+      promises: serialized,
     });
     this.get('updatedPromises').clear();
   },
@@ -152,7 +161,7 @@ export default EmberObject.extend(PortMixin, {
   },
 
   serializeArray(promises) {
-    return promises.map(item => this.serialize(item));
+    return promises.map((item) => this.serialize(item));
   },
 
   serialize(promise) {
@@ -177,7 +186,7 @@ export default EmberObject.extend(PortMixin, {
   },
 
   promiseIds(promises) {
-    return promises.map(promise => promise.get('guid'));
+    return promises.map((promise) => promise.get('guid'));
   },
 
   /**
@@ -190,13 +199,15 @@ export default EmberObject.extend(PortMixin, {
     let objectInspector = this.get('objectInspector');
     let inspected = objectInspector.inspectValue(promise, key);
 
-    if (inspected.type === 'type-ember-object' || inspected.type === "type-array") {
+    if (
+      inspected.type === 'type-ember-object' ||
+      inspected.type === 'type-array'
+    ) {
       inspected.objectId = objectInspector.retainObject(promise.get(key));
-      this.get('releaseMethods').pushObject(function() {
+      this.get('releaseMethods').pushObject(function () {
         objectInspector.releaseObject(inspected.objectId);
       });
     }
     return inspected;
-  }
-
+  },
 });

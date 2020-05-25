@@ -29,8 +29,8 @@ export default Component.extend({
       const indicator = {
         name: '...',
         value: {
-          inspect: 'there are more items, send to console to see all'
-        }
+          inspect: 'there are more items, send to console to see all',
+        },
       };
       props = props.slice(0, 100);
       props.push(indicator);
@@ -42,7 +42,11 @@ export default Component.extend({
   sorted: sort('props', 'sortProperties'),
 
   props: map('properties', function (p) {
-    set(p, 'isFunction', p.value.type === 'type-function' || p.value.type === 'type-asyncfunction');
+    set(
+      p,
+      'isFunction',
+      p.value.type === 'type-function' || p.value.type === 'type-asyncfunction'
+    );
     if (p.name == parseInt(p.name)) {
       set(p, 'name', parseInt(p.name));
     }
@@ -63,7 +67,7 @@ export default Component.extend({
       'isTracked:desc',
       'isComputed:desc',
       'isGetter:desc',
-      'name'
+      'name',
     ];
     // change order for arrays, if the array doesnt have items, then the order does not need to be changed
     if (this.get('isArray')) {
@@ -72,6 +76,5 @@ export default Component.extend({
       order.splice(order.length - 1, 0, 'isProperty:desc');
     }
     return order;
-  })
+  }),
 });
-
