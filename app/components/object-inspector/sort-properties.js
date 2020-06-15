@@ -6,10 +6,10 @@ import { A } from '@ember/array';
 export default Component.extend({
   tagName: '',
 
-  isArray: computed('properties', function () {
+  isArray() {
     const props = A(this.get('properties') || []);
     return props.findBy('name', 'length') && props.findBy('name', 0);
-  }),
+  },
 
   /**
    * Sort the properties by name and group them by property type to make them easier to find in the object inspector.
@@ -19,14 +19,20 @@ export default Component.extend({
    */
   sortedProperties: computed('sorted.length', function () {
     // limit arrays
-    if (this.get('isArray') && this.get('sorted.length') > 100) {
+    let props = A(this.get('sorted'));
+    if (this.isArray()) {
+      const item = props.findBy('name', 'length');
+      props.removeObject(item);
+      props.splice(0, 0, item);
+    }
+    if (this.isArray() && this.get('sorted.length') > 100) {
       const indicator = {
         name: '...',
         value: {
           inspect: 'there are more items, send to console to see all',
         },
       };
-      const props = this.get('sorted').slice(0, 100);
+      props = props.slice(0, 100);
       props.push(indicator);
       return props;
     }
