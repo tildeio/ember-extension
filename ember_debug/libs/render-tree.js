@@ -342,8 +342,34 @@ export default class RenderTree {
     return this.parentNodes[id] || null;
   }
 
-  _matchRenderNodes(renderNodes, dom, deep = true) {
+  _doesExistInTree(renderNodes, dom) {
+    let nodes = [...renderNodes];
+
+    while (nodes.length > 0) {
+      let node = nodes.shift();
+
+      if (node.instance?.element?.contains(dom)) {
+        return node;
+      }
+
+      nodes.push(...node.children);
+    }
+
+    return false;
+  }
+
+  _matchRenderNodes(renderNodes, dom, deep = true, knownToExist = undefined) {
     let candidates = [...renderNodes];
+
+    // if (knownToExist === undefined) {
+    //   knownToExist = this._doesExistInTree(renderNodes, dom);
+    // }
+
+    // console.log({ dom, deep, knownToExist, candidate: candidates[0] });
+
+    // if (knownToExist) {
+    //   return knownToExist;
+    // }
 
     while (candidates.length > 0) {
       let candidate = candidates.shift();
@@ -352,7 +378,8 @@ export default class RenderTree {
       if (range && range.isPointInRange(dom, 0)) {
         // We may be able to find a more exact match in one of the children.
         return (
-          this._matchRenderNodes(candidate.children, dom, false) || candidate
+          this._matchRenderNodes(candidate.children, dom, true, knownToExist) ||
+          candidate
         );
       } else if (!range || deep) {
         // There are some edge cases of non-containing parent nodes (e.g. "worm
